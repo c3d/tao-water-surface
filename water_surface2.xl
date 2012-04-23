@@ -1,0 +1,218 @@
+// ****************************************************************************
+//  water_surface2.xl                                               Tao project
+// ****************************************************************************
+//
+//   File Description:
+//
+//    Implement water_surface primitives.
+//    This module was inspired by the following WebGL demo :
+//    http://madebyevan.com/webgl-water/.
+//
+//
+//
+//
+//
+//
+//
+// ****************************************************************************
+// This document is released under the GNU General Public License.
+// See http://www.gnu.org/copyleft/gpl.html and Matthew 25:22 for details
+//  (C) 2011 Christophe de Dinechin <christophe@taodyne.com>
+//  (C) 2011 Jérôme Forissier <jerome@taodyne.com>
+//  (C) 2011 Catherine Burvelle <cathy@taodyne.com>
+//  (C) 2011 Taodyne SAS
+// ****************************************************************************
+
+// Detail of the surface
+WATER_DETAIL -> 150
+WATER_DETAIL := 150
+
+// Strength of the water displacement
+WATER_STRENGTH -> 1.0
+WATER_STRENGTH := 1.0
+
+water_surface_license_ok ->
+    if check_license ("WaterSurface 1.0", false) then
+        true
+    else
+        if blink (1.0, 1.0, 300.0) then
+           true
+        else
+           false
+
+
+water_surface n:text, w:real, h:real ->
+    /**
+    *   Define a colored water surface
+    **/
+    locally
+        color 0.2, 1.0, 1.0, 1.0
+        colored_water_surface n, w, h
+
+
+colored_water_surface n:text, w:real, h:real ->
+    /**
+    *   Define a water surface
+    **/
+    if water_surface_license_ok then
+        locally
+            time
+            texture_unit 0
+            water_show n
+            water_shader
+            surface 0, 0, w, h, WATER_DETAIL, WATER_DETAIL
+
+
+water_shader ->
+    /**
+    *   Define the water shader
+    **/
+    shader_program
+        shader_log
+        vertex_shader <<
+            varying vec3 viewDir;
+            varying vec4 waterColor;
+            varying mat4 textureMat;
+
+            uniform sampler2D water;
+            uniform float     strength;
+
+            void main()
+            {
+               // Texture info
+               vec4 info = texture2D(water, gl_Vertex.xy * 0.5 + 0.5);
+
+               // Compute new position according to displacement map
+               vec3 position    = gl_Vertex.xyz;
+               position.z += info.r * 1000.0 * strength;
+               gl_Position = gl_ModelViewProjectionMatrix * vec4(position, 1.0);
+
+               // Compute texture coordinates
+               gl_TexCoord[1]    = gl_MultiTexCoord1;
+               gl_TexCoord[1].z  = info.r;
+
+               // Get texture matrix
+               textureMat = gl_TextureMatrix[1];
+
+               // World position
+               viewDir = vec3(position.xyz);
+
+               // Water color
+               waterColor = gl_Color;
+            }
+        >>
+        fragment_shader <<
+            varying vec3 viewDir;
+            varying vec4 waterColor;
+            varying mat4 textureMat;
+
+            uniform sampler2D sky;
+            uniform sampler2D tiles;
+            uniform sampler2D water;
+
+            // Settings
+            const float IOR_AIR    = 1.0;
+            const float IOR_WATER  = 1.33;
+            const float poolHeight = 10.0;
+
+            /*
+            * Compute a basic raytracing on a cube
+            */
+            vec2 intersectCube(vec3 origin, vec3 ray, vec3 cubeMin, vec3 cubeMax)
+            {
+                vec3 tMin = (cubeMin - origin) / ray;
+                vec3 tMax = (cubeMax - origin) / ray;
+                vec3 t1 = min(tMin, tMax);
+                vec3 t2 = max(tMin, tMax);
+                float tNear = max(max(t1.x, t1.y), t1.z);
+                float tFar = min(min(t2.x, t2.y), t2.z);
+                return vec2(tNear, tFar);
+            }
+
+            /*
+            * Get the color of the bottom
+            */
+            vec3 getBottomColor(vec3 point)
+            {
+                vec3 bottomColor;
+
+                // Compute bottom color
+                if (abs(point.x) > 0.999)
+                    bottomColor = texture2D(tiles, (textureMat * vec4(point, 1.0)).yz).rgb;
+                else if (abs(point.z) > 0.999)
+                    bottomColor = texture2D(tiles, (textureMat * vec4(point + vec3(0.0, 0.875, 0.0), 1.0)).xy).rgb;
+                else
+                    bottomColor = texture2D(tiles, (textureMat * vec4(point, 1.0)).xz).rgb;
+
+                return bottomColor;
+            }
+
+            /*
+            * Compute the color of the refraction
+            */
+            vec3 getRefractedColor(vec3 origin, vec3 ray)
+            {
+                vec3 color;
+
+                // Do a basic raytracing on the pool
+                vec2 t = intersectCube(origin, ray, vec3(-1.0, -poolHeight, -1.0), vec3(1.0, 2.0, 1.0));
+                vec3 hit = origin + ray * t.y;
+                // Process the result of raytracing
+                if (hit.y < 2.0 / 12.0)
+                    color = getBottomColor(hit);
+                else
+                    texture2D(sky, ray.xy);
+
+                // Set water color
+                if (ray.y < 0.0)
+                    color *= waterColor.xyz;
+
+                return color;
+            }
+
+            /*
+            * Compute normal from a displacement map
+            */
+            vec3 computeNormal(vec4 info)
+            {
+                vec2 coord = viewDir.xy * 0.5 + 0.5;
+                vec2 delta = vec2(1.0 / 256.0, 1.0 / 256.0);
+
+                // Get derivatives
+                vec3 dx = vec3(delta.x, texture2D(water, vec2(coord.x + delta.x, coord.y)).r - info.r, 0.0);
+                vec3 dy = vec3(0.0, texture2D(water, vec2(coord.x, coord.y + delta.y)).r - info.r, delta.y);
+
+                // Compute normal
+                vec3 normal = normalize(cross(dy, dx)).xyz;
+                normal = normalize((vec3(normal.x, sqrt(1.0 - dot(normal.xz, normal.xz)), normal.z)));
+
+                return normal;
+            }
+
+            void main()
+            {
+                // Get texture infos
+                vec2 coord = viewDir.xy * 0.5 + 0.5;
+                vec4 info = texture2D(water, coord);
+
+                // Compute normal and initial ray
+                vec3 normal = computeNormal(info);
+                vec3 ray = normalize(vec3(0, 0, 3000) - viewDir);
+
+                // Compute reflected and refracted ray
+                vec3 reflectedRay = reflect(ray, normal);
+                vec3 refractedRay = refract(ray, normal, IOR_AIR / IOR_WATER);
+
+                // Compute refracted and refracted color
+                vec3 reflectedColor = texture2D(sky, reflectedRay.xy).rgb;
+                vec3 refractedColor = getRefractedColor(gl_TexCoord[1].xyz, refractedRay);
+                float fresnel = mix(0.25, 1.0, pow(1.0 - dot(normal, -ray), 3.0));
+
+                // Compute final color
+                gl_FragColor = vec4(mix(reflectedColor, refractedColor, fresnel), 1.0);
+            }
+        >>
+    shader_set water    := 0              // Unit of the water texture
+    shader_set tiles    := 1              // Unit of the bottom texture
+    shader_set sky      := 2              // Unit of the TOP texture
+    shader_set strength := WATER_STRENGTH // Set strength of the water

@@ -1,0 +1,20 @@
+﻿// Water surface module definition
+//
+// This module defines the water_surface primitives
+//
+// Copyright 2010-2011 Taodyne
+
+module_description
+    id "2b66f013-c4cf-4bcb-b7e1-adce768df64c"
+    name "Water surface"
+    import_name "WaterSurface"
+    description "Allows to create a dynamic water surface."
+    author "Taodyne SAS"
+    website "http://www.taodyne.com"
+    version 1.0
+
+module_description "fr",
+    name "Surface d'eau"
+    description "Permet de créer une surface d'eau dynamique."
+
+import "water_surface2.xl.crypt"

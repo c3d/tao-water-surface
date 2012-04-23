@@ -1,0 +1,78 @@
+﻿// ****************************************************************************
+//  water_surface.tbl                                               Tao project
+// ****************************************************************************
+//
+//   File Description:
+//
+//     Definition of the interface between XLR and native code
+//     for the "water_surface" module.
+//
+//
+//
+//
+//
+//
+//
+// ****************************************************************************
+// This software is property of Taodyne SAS - Confidential
+// Ce logiciel est la propriété de Taodyne SAS - Confidentiel
+//  (C) 2011 Baptiste Soulisse <baptiste.soulisse@taodyne.com>
+//  (C) 2011 Taodyne SAS
+// ****************************************************************************
+#include "water_factory.h"
+#include "surface.h"
+
+PREFIX(WaterShow,  tree, "water_show",
+       PARM(n, text, "The name of the water"),
+       return WaterFactory::water_show(n),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Show a water")
+       DESCRIPTION("Show a water"))
+PREFIX(WaterOnly,  tree, "water_only",
+       PARM(n, text, "The name of the water to preserve"),
+       return WaterFactory::water_only(n),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Purge all waters but one.")
+       DESCRIPTION("Purge all waters but one."))
+PREFIX(WaterRemove,  tree, "water_remove",
+       PARM(n, text, "the name of the water to remove"),
+       return WaterFactory::water_remove(n),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Remove a water.")
+       DESCRIPTION("Removes all data structures for a water."))
+PREFIX(WaterExtenuation,  tree, "water_extenuation",
+       PARM(n, text, )
+       PARM(r, real, ),
+       return WaterFactory::water_extenuation(n, r),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Set extenuation of a water surface")
+       DESCRIPTION("Set extenuation of a water surface"))
+PREFIX(AddDrop,  tree, "add_drop",
+       PARM(n, text, )
+       PARM(x, real, )
+       PARM(y, real, )
+       PARM(r, real, )
+       PARM(s, real, ),
+       return WaterFactory::add_drop(n, x, y, r, s),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Add a drop to a water")
+       DESCRIPTION("Add a drop to a water"))
+PREFIX(AddRandomDrops,  tree, "add_random_drops",
+       PARM(t, name, )
+       PARM(n, integer, ),
+       return WaterFactory::add_random_drops(t, n),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Add some random drops to a water")
+       DESCRIPTION("Add some random drops to a water"))
+PREFIX(Surface,  tree, "surface",
+       PARM(x, real, )
+       PARM(y, real, )
+       PARM(w, real, )
+       PARM(h, real, )
+       PARM(l, integer, )
+       PARM(c, integer, ),
+       return Surface::surface(x, y, w, h, l, c),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Generate a subdivided surface")
+       DESCRIPTION("Generate a subdivided surface."))
+
