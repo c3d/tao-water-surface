@@ -63,6 +63,13 @@ void Water::Draw()
 //   Draw : Do nothing
 // ----------------------------------------------------------------------------
 {
+    if (!tested)
+    {
+        licensed = WaterFactory::instance()->tao->checkImpressOrLicense("WaterSurface 1.0");
+        tested = true;
+    }
+    if (!licensed && !WaterFactory::instance()->tao->blink(1.0, 0.2, 300.0))
+        return;
 }
 
 

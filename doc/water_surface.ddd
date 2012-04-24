@@ -4,18 +4,17 @@ color "white"
 // Bind underwater texture
 texture_unit 1
 background_texture
-water_surface "water", window_width, window_height
-mouse_drop "water"
+mouse_drop
+water_surface "water", window_width, window_width
 
 // Use mouse to put drops on the water surface
-mouse_drop name:text ->
+mouse_drop ->
     enable_selection_rectangle false
-    if mouse_buttons <> 0 then
-        add_drop name, mouse_x / window_width, mouse_y / window_height, 1.0, 1.0
+    add_drop "water", mouse_x / window_width, mouse_y / window_width, 1.0, 0.5
 
 // The background texture
 background_texture ->
-    frame_texture 128, 64,
+    frame_texture 64, 64,
         color 0.7, 0.7, 0.7, 100%
         rectangle 0, 0, 200, 200
         color 0.5, 0.5, 0.5, 1

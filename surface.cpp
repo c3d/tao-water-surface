@@ -109,6 +109,14 @@ void Surface::Draw()
 //   Draw subdivided surface
 // ----------------------------------------------------------------------------
 {
+    if (!Basis::tested)
+    {
+        Basis::licensed = WaterFactory::instance()->tao->checkImpressOrLicense("WaterSurface 1.0");
+        Basis::tested = true;
+    }
+    if (!Basis::licensed && !WaterFactory::instance()->tao->blink(1.0, 0.2, 300.0))
+        return;
+
     SurfaceMesh * surface = NULL;
     Key key(slices, stacks);
     SurfaceCache::iterator found = cache.find(key);

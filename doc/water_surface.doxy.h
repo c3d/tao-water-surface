@@ -260,8 +260,7 @@ water_extenuation (name:text, r:real);
  * For instance, the following code allows to use mouse to put some drops
  * on the water surface named @e water.
 @code
-if mouse_buttons <> 0 then
-    add_drop "water", mouse_x / 500, mouse_y / 500, 1.0, 1.0
+add_drop "water", mouse_x / 500, mouse_y / 500, 1.0, 1.0
 @endcode
  *
  * @~french
@@ -280,8 +279,7 @@ if mouse_buttons <> 0 then
  * Par exemple le code suivant permet d'utiliser la souris pour ajouter des gouttes
  * sur la surface d'eau nommée @e eau.
 @code
-if mouse_buttons <> 0 then
-    add_drop "eau", mouse_x / 500, mouse_y / 500, 1.0, 1.0
+add_drop "eau", mouse_x / 500, mouse_y / 500, 1.0, 1.0
 @endcode
  */
 add_drop(name:text, x:real, y:real, r:real, s:real);
