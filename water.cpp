@@ -48,7 +48,11 @@ Water::Water(int w, int h)
     WaterFactory::instance()->tao->releaseFrameBufferObject(frame);
 
     randomDrops(20);
+
+    IFTRACE(water_surface)
+            debug() << "Creation" << "\n";
 }
+
 
 
 Water::~Water()
@@ -91,6 +95,9 @@ void Water::drop(double x, double y, double radius, double strength)
 //   Add a drop to the water
 // ----------------------------------------------------------------------------
 {
+    IFTRACE(water_surface)
+            debug() << "Add drop" << "\n";
+
     checkGLContext();
 
     // Save current settings
@@ -171,6 +178,9 @@ void Water::update()
 //   Update the water
 // ----------------------------------------------------------------------------
 {
+    IFTRACE(water_surface)
+            debug() << "Update water" << "\n";
+
     checkGLContext();
 
     // Save current settings
@@ -248,6 +258,9 @@ void Water::createDropShader()
     bool ok = false;
     if(! dropShader)
     {
+        IFTRACE(water_surface)
+                debug() << "Create drop shader" << "\n";
+
         dropShader = new QGLShaderProgram();
         // Basic vertex shader
         static string vSrc =
@@ -349,6 +362,9 @@ void Water::createUpdateShader()
     bool ok = false;
     if(! updateShader)
     {
+        IFTRACE(water_surface)
+                debug() << "Create update shader" << "\n";
+
         updateShader = new QGLShaderProgram();
         // Basic vertex shader
         static string vSrc =
@@ -456,4 +472,12 @@ void Water::createUpdateShader()
     }
 }
 
+std::ostream & Water::debug()
+// ----------------------------------------------------------------------------
+//   Convenience method to log with a common prefix
+// ----------------------------------------------------------------------------
+{
+    std::cerr << "[Water] " << (void*)this << " ";
+    return std::cerr;
+}
 

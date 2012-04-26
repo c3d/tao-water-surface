@@ -47,6 +47,8 @@ protected:
 private:
     void            createDropShader();
     void            createUpdateShader();
+    std::ostream &  debug();
+
 
 public:
     uint     textureId;
