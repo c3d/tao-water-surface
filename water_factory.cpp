@@ -17,7 +17,6 @@
 //  (C) 2011 Baptiste Soulisse <baptiste.soulisse@taodyne.com>
 //  (C) 2011 Taodyne SAS
 // ****************************************************************************
-#include "basis.h"
 #include "water_factory.h"
 #include <iostream>
 
@@ -25,6 +24,10 @@
 const Tao::ModuleApi *WaterFactory::tao = NULL;
 
 WaterFactory* WaterFactory::factory = NULL;
+
+// License
+bool          WaterFactory::tested = false;
+bool          WaterFactory::licensed = false;
 
 WaterFactory::WaterFactory()
 {
@@ -69,6 +72,24 @@ void WaterFactory::destroy()
         return;
     delete factory;
     factory = NULL;
+}
+
+
+bool WaterFactory::checkLicense()
+// ----------------------------------------------------------------------------
+//   Check module license
+// ----------------------------------------------------------------------------
+{
+    if (!tested)
+    {
+        licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.0");
+        tested = true;
+    }
+
+    if (!licensed && !instance()->tao->blink(1.0, 0.2, 300.0))
+        return false;
+
+    return true;
 }
 
 

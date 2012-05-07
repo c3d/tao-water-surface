@@ -109,12 +109,8 @@ void Surface::Draw()
 //   Draw subdivided surface
 // ----------------------------------------------------------------------------
 {
-    if (!Basis::tested)
-    {
-        Basis::licensed = WaterFactory::instance()->tao->checkImpressOrLicense("WaterSurface 1.0");
-        Basis::tested = true;
-    }
-    if (!Basis::licensed && !WaterFactory::instance()->tao->blink(1.0, 0.2, 300.0))
+    // Check module license
+    if(! WaterFactory::checkLicense())
         return;
 
     SurfaceMesh * surface = NULL;

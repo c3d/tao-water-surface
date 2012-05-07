@@ -42,6 +42,7 @@ public:
 public:
     static WaterFactory* instance();
     static void          destroy();
+    static bool          checkLicense();
 
     static void          render_callback(void *arg);
     static void          delete_callback(void *arg);
@@ -65,6 +66,9 @@ protected:
 
 protected:
     static WaterFactory * factory;
+
+    // License
+    static bool tested, licensed;
 };
 
 #endif

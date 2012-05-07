@@ -19,12 +19,10 @@ DEFINES     += GLEW_STATIC
 INCLUDEPATH += $${TAOTOPSRC}/tao/include/tao/
 HEADERS = \
           water.h \
-          basis.h \
           surface.h \
     water_factory.h
 
 SOURCES = water.cpp $${TAOTOPSRC}/tao/include/tao/GL/glew.c \
-          basis.cpp \
           surface.cpp \
     water_factory.cpp
 

@@ -20,7 +20,6 @@
 //  (C) 2010 Taodyne SAS
 // ****************************************************************************
 #include "water_factory.h"
-#include "basis.h"
 #include <vector>
 
 struct SurfaceMesh

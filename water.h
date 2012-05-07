@@ -22,13 +22,12 @@
 #include "tao/coords3d.h"
 #include "tao/module_api.h"
 #include "tao/tao_gl.h"
-#include "basis.h"
 #include "basics.h" // XLR
 
 using namespace std;
 using namespace Tao;
 
-struct Water : public Basis
+struct Water
 {
     Water(int w = 256, int h = 256);
     virtual ~Water();
@@ -41,16 +40,19 @@ struct Water : public Basis
 
     void            resize(int w, int h);
     void            extenuation(float r);
-protected:
-    virtual void    createShaders();
 
 private:
+    // Re-create shaders if GL context has changed
+    void            checkGLContext();
+    void            createShaders();
     void            createDropShader();
     void            createUpdateShader();
+
     std::ostream &  debug();
 
-
 public:
+    const QGLContext    **pcontext;
+
     uint     textureId;
     int      width, height;
 
@@ -65,8 +67,9 @@ private:
    static bool  failed;
    static QGLShaderProgram *dropShader, *updateShader;
    static std::map<text, GLint> uniforms;
-   static const QGLContext* context;
 
+   // GL context
+   static const QGLContext* context;
 };
 
 

@@ -32,13 +32,15 @@ bool                  Water::failed = false;
 QGLShaderProgram*     Water::dropShader = NULL;
 QGLShaderProgram*     Water::updateShader = NULL;
 std::map<text, GLint> Water::uniforms;
+
+// GL Context
 const QGLContext*     Water::context = NULL;
 
 Water::Water(int w, int h)
 // ----------------------------------------------------------------------------
 //   Construction
 // ----------------------------------------------------------------------------
-    : Basis(&context), textureId(0), ratio(0.95)
+    : pcontext(&context), textureId(0), ratio(0.95)
 {
     checkGLContext();
     width  = w;
@@ -67,12 +69,8 @@ void Water::Draw()
 //   Draw : Do nothing
 // ----------------------------------------------------------------------------
 {
-    if (!tested)
-    {
-        licensed = WaterFactory::instance()->tao->checkImpressOrLicense("WaterSurface 1.0");
-        tested = true;
-    }
-    if (!licensed && !WaterFactory::instance()->tao->blink(1.0, 0.2, 300.0))
+    // Check module license
+    if(! WaterFactory::checkLicense())
         return;
 }
 
@@ -237,12 +235,35 @@ void Water::update()
 }
 
 
+void Water::checkGLContext()
+// ----------------------------------------------------------------------------
+//   Re-create context-dependent resources if GL context has changed
+// ----------------------------------------------------------------------------
+{
+    if (*pcontext != QGLContext::currentContext())
+    {
+        // Delete all shaders
+        delete dropShader;
+        delete updateShader;
+
+        dropShader = NULL;
+        updateShader = NULL;
+
+        createShaders();
+        *pcontext = QGLContext::currentContext();
+    }
+}
+
+
 void Water::createShaders()
 // ----------------------------------------------------------------------------
 //   Create all shaders
 // ----------------------------------------------------------------------------
 {
-    if(!failed)
+    IFTRACE(water_surface)
+            debug() << "Create shaders" << "\n";
+
+    if(! failed)
     {
         createDropShader();
         createUpdateShader();
@@ -256,6 +277,9 @@ void Water::createDropShader()
 // ----------------------------------------------------------------------------
 {
     bool ok = false;
+    IFTRACE(water_surface)
+            debug() << "Drop shader : " << dropShader << "\n";
+
     if(! dropShader)
     {
         IFTRACE(water_surface)
@@ -360,6 +384,9 @@ void Water::createUpdateShader()
 // ----------------------------------------------------------------------------
 {
     bool ok = false;
+    IFTRACE(water_surface)
+            debug() << "Update shader : " << updateShader << "\n";
+
     if(! updateShader)
     {
         IFTRACE(water_surface)
