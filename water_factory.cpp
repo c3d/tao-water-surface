@@ -98,7 +98,6 @@ void WaterFactory::render_callback(void *arg)
 //   Find water by name and draw it
 // ----------------------------------------------------------------------------
 {
-
     text name = text((const char *)arg);
     Water * water = WaterFactory::instance()->water(name);
     if (water)
@@ -125,8 +124,6 @@ Name_p WaterFactory::water_show(text name)
     instance()->tao->addToLayout(WaterFactory::render_callback,
                                  strdup(name.c_str()),
                                  WaterFactory::delete_callback);
-    tao->BindTexture2D(water->textureId, water->width, water->height);
-
     return XL::xl_true;
 }
 

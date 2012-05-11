@@ -58,7 +58,7 @@ PREFIX(AddDrop,  tree, "add_drop",
        SYNOPSIS("Add a drop to a water")
        DESCRIPTION("Add a drop to a water"))
 PREFIX(AddRandomDrops,  tree, "add_random_drops",
-       PARM(t, name, )
+       PARM(t, text, )
        PARM(n, integer, ),
        return WaterFactory::add_random_drops(t, n),
        GROUP(module.WaterSurface)

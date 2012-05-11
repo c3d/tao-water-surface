@@ -21,6 +21,8 @@
 #include "water.h"
 #include "water_factory.h"
 
+#define tao WaterFactory::instance()->tao
+
 // ============================================================================
 //
 //   Water
@@ -33,26 +35,17 @@ QGLShaderProgram*     Water::dropShader = NULL;
 QGLShaderProgram*     Water::updateShader = NULL;
 std::map<text, GLint> Water::uniforms;
 
-// GL Context
-const QGLContext*     Water::context = NULL;
-
 Water::Water(int w, int h)
 // ----------------------------------------------------------------------------
 //   Construction
 // ----------------------------------------------------------------------------
-    : pcontext(&context), textureId(0), ratio(0.95)
+    : pcontext(NULL), ping(0), pong(0),
+      width(w), height(h), ratio(0.95), frame(0), pass(0)
 {
     checkGLContext();
-    width  = w;
-    height = h;
-
-    frame  = WaterFactory::instance()->tao->newFrameBufferObjectWithFormat(w, h, GL_RGBA16F_ARB);
-    WaterFactory::instance()->tao->releaseFrameBufferObject(frame);
-
-    randomDrops(20);
 
     IFTRACE(water_surface)
-            debug() << "Creation" << "\n";
+            debug() << "Creation successfull" << "\n";
 }
 
 
@@ -63,6 +56,7 @@ Water::~Water()
 // ----------------------------------------------------------------------------
 {
 }
+
 
 void Water::Draw()
 // ----------------------------------------------------------------------------
@@ -93,6 +87,9 @@ void Water::drop(double x, double y, double radius, double strength)
 //   Add a drop to the water
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return;
+
     IFTRACE(water_surface)
             debug() << "Add drop" << "\n";
 
@@ -101,22 +98,40 @@ void Water::drop(double x, double y, double radius, double strength)
     // Save current settings
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_VIEWPORT_BIT);
 
-    // Save current framebuffer, if any
-    GLint fbname = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbname);
+    // Prepare to draw into buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, frame);
 
-    // Make sure output buffer has the right size (resolution may have changed)
-    // and prepare to draw into it
-    WaterFactory::instance()->tao->bindFrameBufferObject(frame);
+    // Switch to correct buffer and bind
+    // the other as a texture
+    switch(pass)
+    {
+    case 0:
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        break;
+    case 1:
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, pong);
+        break;
+    case 2:
+        glDrawBuffer(GL_COLOR_ATTACHMENT1);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, ping);
+        break;
+    default:
+        Q_ASSERT(!"Invalid value");
+    }
+
+    // Clear color
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glViewport(0, 0, width, height);
 
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
+    // Bind drop shader
     glUseProgram(dropShader->programId());
 
+    // Set uniforms
     GLfloat center[2] = {x, y};
     glUniform2fv(uniforms["dropCenter"], 1, center);
     glUniform1f(uniforms["dropRadius"], radius);
@@ -138,20 +153,21 @@ void Water::drop(double x, double y, double radius, double strength)
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
 
-    // Done with drawing.
-    // Make buffer available to the shader as a texture.
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    WaterFactory::instance()->tao->releaseFrameBufferObject(frame);
-    textureId = WaterFactory::instance()->tao->frameBufferObjectToTexture(frame);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
-
-    // Select draw buffer
-    if (fbname)
-        glBindFramebuffer(GL_FRAMEBUFFER, fbname);
-    else
-        glDrawBuffer(GL_BACK);
+    // Ping pong technique
+    switch(pass)
+    {
+    case 0:
+    case 1:
+        pass = 2;
+        break;
+    case 2:
+        pass = 1;
+        break;
+    default:
+        Q_ASSERT(!"Invalid value");
+    }
 
     // Restore settings
     glPopAttrib();
@@ -171,11 +187,15 @@ void Water::randomDrops(int n)
     }
 }
 
+
 void Water::update()
 // ----------------------------------------------------------------------------
 //   Update the water
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return;
+
     IFTRACE(water_surface)
             debug() << "Update water" << "\n";
 
@@ -184,22 +204,40 @@ void Water::update()
     // Save current settings
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_VIEWPORT_BIT);
 
-    // Save current framebuffer, if any
-    GLint fbname = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbname);
+    // Prepare to draw into buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, frame);
 
-    // Make sure output buffer has the right size (resolution may have changed)
-    // and prepare to draw into it
-    WaterFactory::instance()->tao->bindFrameBufferObject(frame);
+    // Switch to correct buffer and bind
+    // the other as a texture
+    switch(pass)
+    {
+    case 0:
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        break;
+    case 1:
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, pong);
+        break;
+    case 2:
+        glDrawBuffer(GL_COLOR_ATTACHMENT1);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, ping);
+        break;
+    default:
+        Q_ASSERT(!"Invalid value");
+    }
+
+    // Clear color
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glViewport(0, 0, width, height);
 
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
+    // Bind update shader
     glUseProgram(updateShader->programId());
 
+    // Set uniforms
     GLfloat delta[2] = {1.0 / width, 1.0 / height};
     glUniform2fv(uniforms["updateDelta"], 1, delta);
     glUniform1f(uniforms["updateRatio"], ratio);
@@ -220,15 +258,23 @@ void Water::update()
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
 
-    // Done with drawing.
-    // Make buffer available to the shader as a texture.
-    WaterFactory::instance()->tao->releaseFrameBufferObject(frame);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // Select draw buffer
-    if (fbname)
-        glBindFramebuffer(GL_FRAMEBUFFER, fbname);
-    else
-        glDrawBuffer(GL_BACK);
+    // Ping pong technique
+    switch(pass)
+    {
+    case 0:
+    case 1:
+        tao->BindTexture2D(ping, width, height);
+        pass = 2;
+        break;
+    case 2:
+        tao->BindTexture2D(pong, width, height);
+        pass = 1;
+        break;
+    default:
+        Q_ASSERT(!"Invalid value");
+    }
 
     // Restore settings
     glPopAttrib();
@@ -240,34 +286,75 @@ void Water::checkGLContext()
 //   Re-create context-dependent resources if GL context has changed
 // ----------------------------------------------------------------------------
 {
-    if (*pcontext != QGLContext::currentContext())
+    tao->makeGLContextCurrent();
+    if (pcontext != QGLContext::currentContext())
     {
-        // Delete all shaders
-        delete dropShader;
-        delete updateShader;
+        IFTRACE(water_surface)
+                debug() << "Context has changed" << "\n";
 
-        dropShader = NULL;
-        updateShader = NULL;
+        pcontext = QGLContext::currentContext();
 
-        createShaders();
-        *pcontext = QGLContext::currentContext();
+        createShaders();     // Create all shaders
+        createTexture(ping); // Create ping texture
+        createTexture(pong); // Create pong texture
+        createBuffer();      // Create fbo
+
+        // Reset pass
+        pass = 0;
     }
+}
+
+
+void Water::createTexture(uint& texId)
+// ----------------------------------------------------------------------------
+//   Create a texture to attach to the fbo
+// ----------------------------------------------------------------------------
+{
+    glGenTextures(1, &texId);
+    glBindTexture(GL_TEXTURE_2D, texId);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    IFTRACE(water_surface)
+                debug() << "Create texture: " << texId << "\n";
+}
+
+
+void Water::createBuffer()
+// ----------------------------------------------------------------------------
+//   Create frame buffer
+// ----------------------------------------------------------------------------
+{
+    if(frame)
+        glDeleteFramebuffers(1, &frame);
+
+    glGenFramebuffers(1, &frame); // Generate one frame buffer and store the ID in frame
+    glBindFramebuffer(GL_FRAMEBUFFER, frame); // Bind our frame buffer
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ping, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, pong, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    IFTRACE(water_surface)
+                debug() << "Create frame buffer: " << frame << "\n";
 }
 
 
 void Water::createShaders()
 // ----------------------------------------------------------------------------
-//   Create all shaders
+//   Create shader programs
 // ----------------------------------------------------------------------------
 {
     IFTRACE(water_surface)
-            debug() << "Create shaders" << "\n";
+                debug() << "Create shaders" << "\n";
 
-    if(! failed)
-    {
-        createDropShader();
-        createUpdateShader();
-    }
+    createDropShader();
+    createUpdateShader();
 }
 
 
@@ -276,16 +363,16 @@ void Water::createDropShader()
 //   Create shader used to add drops
 // ----------------------------------------------------------------------------
 {
-    bool ok = false;
-    IFTRACE(water_surface)
-            debug() << "Drop shader : " << dropShader << "\n";
-
-    if(! dropShader)
+    if(!failed)
     {
         IFTRACE(water_surface)
                 debug() << "Create drop shader" << "\n";
 
-        dropShader = new QGLShaderProgram();
+        delete dropShader;
+
+        dropShader = new QGLShaderProgram(pcontext);
+        bool ok = false;
+
         // Basic vertex shader
         static string vSrc =
                 "/********************************************************************************\n"
@@ -378,21 +465,22 @@ void Water::createDropShader()
     }
 }
 
+
 void Water::createUpdateShader()
 // ----------------------------------------------------------------------------
 //   Create shader used to update water
 // ----------------------------------------------------------------------------
 {
-    bool ok = false;
-    IFTRACE(water_surface)
-            debug() << "Update shader : " << updateShader << "\n";
-
-    if(! updateShader)
+    if(!failed)
     {
         IFTRACE(water_surface)
                 debug() << "Create update shader" << "\n";
 
-        updateShader = new QGLShaderProgram();
+        delete updateShader;
+
+        updateShader = new QGLShaderProgram(pcontext);
+        bool ok = false;
+
         // Basic vertex shader
         static string vSrc =
                 "/********************************************************************************\n"
@@ -498,6 +586,7 @@ void Water::createUpdateShader()
         }
     }
 }
+
 
 std::ostream & Water::debug()
 // ----------------------------------------------------------------------------

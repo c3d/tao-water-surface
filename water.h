@@ -38,22 +38,25 @@ struct Water
     void            randomDrops(int n);
     void            update();
 
-    void            resize(int w, int h);
     void            extenuation(float r);
 
 private:
     // Re-create shaders if GL context has changed
     void            checkGLContext();
+
     void            createShaders();
     void            createDropShader();
     void            createUpdateShader();
 
+    void            createTexture(uint& texId);
+    void            createBuffer();
+
     std::ostream &  debug();
 
 public:
-    const QGLContext    **pcontext;
+    const QGLContext    *pcontext;
 
-    uint     textureId;
+    uint     ping, pong;
     int      width, height;
 
 private:
@@ -61,15 +64,14 @@ private:
    float    ratio;
 
    // FBO settings
-   Tao::ModuleApi::fbo     *frame;
+   uint frame;
+
+   uint pass;
 
    // Shaders settings
    static bool  failed;
    static QGLShaderProgram *dropShader, *updateShader;
    static std::map<text, GLint> uniforms;
-
-   // GL context
-   static const QGLContext* context;
 };
 
 
