@@ -139,22 +139,22 @@ water_shader ->
             /*
             * Compute the color of the refraction
             */
-            vec3 getRefractedColor(vec3 origin, vec3 ray)
+            vec4 getRefractedColor(vec3 origin, vec3 ray)
             {
-                vec3 color;
+                vec4 color = vec4(1.0);
 
                 // Do a basic raytracing on the pool
                 vec2 t = intersectCube(origin, ray, vec3(-1.0, -poolHeight, -1.0), vec3(1.0, 2.0, 1.0));
                 vec3 hit = origin + ray * t.y;
                 // Process the result of raytracing
                 if (hit.y < 2.0 / 12.0)
-                    color = getBottomColor(hit);
+                    color.xyz = getBottomColor(hit);
                 else
-                    texture2D(sky, ray.xy);
+                    color.xyz = texture2D(sky, ray.xy).xyz;
 
                 // Set water color
                 if (ray.y < 0.0)
-                    color *= waterColor.xyz;
+                    color *= waterColor;
 
                 return color;
             }
@@ -193,12 +193,12 @@ water_shader ->
                 vec3 refractedRay = refract(ray, normal, IOR_AIR / IOR_WATER);
 
                 // Compute refracted and refracted color
-                vec3 reflectedColor = texture2D(sky, reflectedRay.xy).rgb;
-                vec3 refractedColor = getRefractedColor(gl_TexCoord[1].xyz, refractedRay);
+                vec4 reflectedColor = texture2D(sky, reflectedRay.xy);
+                vec4 refractedColor = getRefractedColor(gl_TexCoord[1].xyz, refractedRay);
                 float fresnel = mix(0.25, 1.0, pow(1.0 - dot(normal, -ray), 3.0));
 
                 // Compute final color
-                gl_FragColor = vec4(mix(reflectedColor, refractedColor, fresnel), 1.0);
+                gl_FragColor = mix(reflectedColor, refractedColor, fresnel);
             }
         >>
     shader_set water    := 0              // Unit of the water texture
