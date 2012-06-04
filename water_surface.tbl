@@ -19,7 +19,6 @@
 //  (C) 2011 Baptiste Soulisse <baptiste.soulisse@taodyne.com>
 //  (C) 2011 Taodyne SAS
 // ****************************************************************************
-
 #include "water_factory.h"
 #include "surface.h"
 
