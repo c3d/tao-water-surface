@@ -5,10 +5,10 @@
  * Defines a sort of dynamic water surface.\n
  *
  * With this module, you can add nice and dynamic water surfaces in your presentations,
- * as it was showed by the following example :
+ * as shown by the following example :
  * @include water_surface.ddd
  *
- * @image html water_surface.png "Output from water_surface.ddd"
+ * @image html water_surface.png "Ripple effect"
  *
  * @endtaomoduledescription{WaterSurface}
  * @~french
