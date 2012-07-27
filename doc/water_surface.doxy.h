@@ -248,7 +248,7 @@ water_extenuation (name:text, r:real);
  * Add a drop to the surface of a water.
  *
  * Put a drop on the water surface named @p name, which leads to the creations of some waves
- * disappearing more or less quickly according to the value of @ref water_extenuation.\n
+ * disappearing more or less quickly according to the value of @ref WATER_EXTENUATION.\n
  * The strength of these waves depend mainly of the value of @ref WATER_STRENGTH.
  *
  * @param name name of the water surface.
@@ -267,7 +267,7 @@ add_drop "water", mouse_x / 500, mouse_y / 500, 1.0, 1.0
  * Dépose une goutte à la surface de l'eau.
  *
  * Ajoute une goutte sur la surface d'eau dont le nom est @p name, ce qui conduit à la création
- * de vagues disparaissant plus ou moins rapidement selon la valeur de @ref water_extenuation.\n
+ * de vagues disparaissant plus ou moins rapidement selon la valeur de @ref WATER_EXTENUATION.\n
  * La force de ces vagues dépend principalement de la valeur de @ref WATER_STRENGTH.
  *
  * @param name Nom de la surface d'eau.
