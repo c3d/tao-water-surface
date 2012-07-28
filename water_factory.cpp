@@ -82,7 +82,7 @@ bool WaterFactory::checkLicense()
 {
     if (!tested)
     {
-        licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.0");
+        licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.001");
         tested = true;
     }
 
