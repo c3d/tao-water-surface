@@ -85,10 +85,6 @@ bool WaterFactory::checkLicense()
         licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.001");
         tested = true;
     }
-
-    if (!licensed && !instance()->tao->blink(1.0, 0.2, 300.0))
-        return false;
-
     return true;
 }
 
