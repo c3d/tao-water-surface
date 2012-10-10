@@ -14,7 +14,7 @@
 //
 // ****************************************************************************
 // This software is property of Taodyne SAS - Confidential
-// Ce logiciel est la propriété de Taodyne SAS - Confidentiel
+// Ce logiciel est la propriÃ©tÃ© de Taodyne SAS - Confidentiel
 //  (C) 2011 Baptiste Soulisse <baptiste.soulisse@taodyne.com>
 //  (C) 2011 Taodyne SAS
 // ****************************************************************************
@@ -50,8 +50,6 @@ private:
 
     void            createTexture(uint& texId);
     void            createBuffer();
-
-    void checkFramebufferStatus();
 
     std::ostream &  debug();
 
