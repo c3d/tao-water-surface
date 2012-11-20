@@ -51,8 +51,6 @@ private:
     void            createTexture(uint& texId);
     void            createBuffer();
 
-    void checkFramebufferStatus();
-
     std::ostream &  debug();
 
 public:
