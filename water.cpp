@@ -310,6 +310,11 @@ void Water::createTexture(uint& texId)
 //   Create a texture to attach to the fbo
 // ----------------------------------------------------------------------------
 {
+    // Don't need to create texture if already failed
+    if(failed)
+        return;
+
+    // Create texture for ping pong technic
     glGenTextures(1, &texId);
     glBindTexture(GL_TEXTURE_2D, texId);
 
@@ -320,6 +325,8 @@ void Water::createTexture(uint& texId)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    tao->showGlErrors();
 
     IFTRACE(water_surface)
                 debug() << "Create texture: " << texId << "\n";
@@ -334,11 +341,30 @@ void Water::createBuffer()
     if(frame)
         glDeleteFramebuffers(1, &frame);
 
+    // Check if graphic card has really two color attachments
+    // because we need it to make ping-pong technics
+    GLint max_color_attachments = 0;
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+    if(max_color_attachments < 2)
+    {
+        failed = true;
+        IFTRACE(water_surface)
+                    debug() << "No enough color attachments available for this module. " << "\n";
+    }
+
+    // Don't need to create fbo if already failed
+    if(failed)
+        return;
+
+    // Create fbo and attach textures to it
     glGenFramebuffers(1, &frame); // Generate one frame buffer and store the ID in frame
     glBindFramebuffer(GL_FRAMEBUFFER, frame); // Bind our frame buffer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ping, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, pong, 0);
+    checkFramebufferStatus();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    tao->showGlErrors();
 
     IFTRACE(water_surface)
                 debug() << "Create frame buffer: " << frame << "\n";
@@ -585,6 +611,42 @@ void Water::createUpdateShader()
             uniforms["updateRatio"] = glGetUniformLocation(id, "ratio");
         }
     }
+}
+
+
+void Water::checkFramebufferStatus()
+// ----------------------------------------------------------------------------
+//   Check the status of current frame buffer
+// ----------------------------------------------------------------------------
+{
+    GLenum status;
+    status=(GLenum)glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    text error = "";
+    switch(status) {
+        case GL_FRAMEBUFFER_COMPLETE_EXT: return ;
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+            error = "Framebuffer incomplete,incomplete attachment\n"; break;
+        case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+            error = "Unsupported framebuffer format\n"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+            error = "Framebuffer incomplete,missing attachment\n"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+            error = "Framebuffer incomplete,attached images must have same dimensions\n"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+            error = "Framebuffer incomplete,attached images must have same format\n"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+            error = "Framebuffer incomplete,missing draw buffer\n"; break;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+            error = "Framebuffer incomplete,missing read buffer\n"; break;
+        default:
+            error = "Framebuffer incomplete"; break;
+    }
+
+    IFTRACE(water_surface)
+                debug() << error;
+
+    failed = true;
 }
 
 
