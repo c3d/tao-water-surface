@@ -24,18 +24,25 @@
 const Tao::ModuleApi *WaterFactory::tao = NULL;
 
 WaterFactory* WaterFactory::factory = NULL;
+bool          WaterFactory::failed  = false;
 
 // License
 bool          WaterFactory::tested = false;
 bool          WaterFactory::licensed = false;
 
 WaterFactory::WaterFactory()
+// ----------------------------------------------------------------------------
+//   Create water factory
+// ----------------------------------------------------------------------------
 {
     glewInit();
 }
 
 
 Water* WaterFactory::water(text name)
+// ----------------------------------------------------------------------------
+//   Return water instance according to its name
+// ----------------------------------------------------------------------------
 {
     Water* water = NULL;
     water_map::iterator found = waters.find(name);
@@ -115,6 +122,9 @@ Name_p WaterFactory::water_show(text name)
 //   Show water
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return xl_false;
+
     Water* water = instance()->water(name);
     water->update();
     instance()->tao->addToLayout(WaterFactory::render_callback,
@@ -129,6 +139,9 @@ Name_p WaterFactory::water_only(text name)
 //   Purge all other waters from memory
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return xl_false;
+
     WaterFactory * f = WaterFactory::instance();
     water_map::iterator n = f->waters.begin();
     for (water_map::iterator v = f->waters.begin();
@@ -156,6 +169,9 @@ Name_p WaterFactory::water_remove(text name)
 //   Purge the given water from memory
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return xl_false;
+
     WaterFactory * f = WaterFactory::instance();
     water_map::iterator found = f->waters.find(name);
     if (found != f->waters.end())
@@ -174,6 +190,9 @@ Name_p WaterFactory::water_extenuation(text name, Real_p ratio)
 //   Set extenuation of the water surface
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return xl_false;
+
     Water* water = instance()->water(name);
     if(water)
     {
@@ -189,6 +208,9 @@ Name_p WaterFactory::add_drop(text name, Real_p x, Real_p y, Real_p radius, Real
 //   Add a drop to a current water
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return xl_false;
+
     Water* water = instance()->water(name);
     if(water)
     {
@@ -204,6 +226,9 @@ Name_p WaterFactory::add_random_drops(text name, Integer_p number)
 //   Add some random drops to a water
 // ----------------------------------------------------------------------------
 {
+    if(failed)
+        return xl_false;
+
     Water* water = instance()->water(name);
     if(water)
     {
@@ -223,6 +248,12 @@ int module_init(const Tao::ModuleApi *api, const Tao::ModuleInfo *)
 {
     XL_INIT_TRACES();
     WaterFactory::instance()->tao = api;
+
+    // Check if we support floating textures to use correctly this module. If not, then
+    // do not create the water surface to avoid GL errors. Refs #2690.
+    if (!(WaterFactory::instance()->tao)->isGLExtensionAvailable("GL_ARB_texture_float"))
+        WaterFactory::failed = true;
+
     return 0;
 }
 
