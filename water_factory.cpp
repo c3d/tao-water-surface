@@ -251,9 +251,16 @@ int module_init(const Tao::ModuleApi *api, const Tao::ModuleInfo *)
 
     // Check if we support floating textures to use correctly this module. If not, then
     // do not create the water surface to avoid GL errors. Refs #2690.
-    if (!(WaterFactory::instance()->tao)->isGLExtensionAvailable("GL_ARB_texture_float"))
-        WaterFactory::failed = true;
-
+    if (!api->isGLExtensionAvailable("GL_ARB_texture_float"))
+    {
+        XL::Ooops("GL_ARB_texture_float extension not available");
+        return -1;
+    }
+    if (!api->isGLExtensionAvailable("GL_EXT_gpu_shader4"))
+    {
+        XL::Ooops("GL_EXT_gpu_shader4 extension not available");
+        return -1;
+    }
     return 0;
 }
 
