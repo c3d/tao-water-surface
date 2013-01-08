@@ -59,7 +59,6 @@ public:
 public:
     // Pointer to Tao functions
     static const Tao::ModuleApi *tao;
-    static bool                  failed;
 
 protected:
     typedef std::map<text, Water *>  water_map;

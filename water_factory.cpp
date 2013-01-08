@@ -24,7 +24,6 @@
 const Tao::ModuleApi *WaterFactory::tao = NULL;
 
 WaterFactory* WaterFactory::factory = NULL;
-bool          WaterFactory::failed  = false;
 
 // License
 bool          WaterFactory::tested = false;
@@ -122,9 +121,6 @@ Name_p WaterFactory::water_show(text name)
 //   Show water
 // ----------------------------------------------------------------------------
 {
-    if(failed)
-        return xl_false;
-
     Water* water = instance()->water(name);
     water->update();
     instance()->tao->addToLayout(WaterFactory::render_callback,
@@ -139,9 +135,6 @@ Name_p WaterFactory::water_only(text name)
 //   Purge all other waters from memory
 // ----------------------------------------------------------------------------
 {
-    if(failed)
-        return xl_false;
-
     WaterFactory * f = WaterFactory::instance();
     water_map::iterator n = f->waters.begin();
     for (water_map::iterator v = f->waters.begin();
@@ -169,9 +162,6 @@ Name_p WaterFactory::water_remove(text name)
 //   Purge the given water from memory
 // ----------------------------------------------------------------------------
 {
-    if(failed)
-        return xl_false;
-
     WaterFactory * f = WaterFactory::instance();
     water_map::iterator found = f->waters.find(name);
     if (found != f->waters.end())
@@ -190,9 +180,6 @@ Name_p WaterFactory::water_extenuation(text name, Real_p ratio)
 //   Set extenuation of the water surface
 // ----------------------------------------------------------------------------
 {
-    if(failed)
-        return xl_false;
-
     Water* water = instance()->water(name);
     if(water)
     {
@@ -208,9 +195,6 @@ Name_p WaterFactory::add_drop(text name, Real_p x, Real_p y, Real_p radius, Real
 //   Add a drop to a current water
 // ----------------------------------------------------------------------------
 {
-    if(failed)
-        return xl_false;
-
     Water* water = instance()->water(name);
     if(water)
     {
@@ -226,9 +210,6 @@ Name_p WaterFactory::add_random_drops(text name, Integer_p number)
 //   Add some random drops to a water
 // ----------------------------------------------------------------------------
 {
-    if(failed)
-        return xl_false;
-
     Water* water = instance()->water(name);
     if(water)
     {
