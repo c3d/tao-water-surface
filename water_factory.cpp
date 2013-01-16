@@ -30,12 +30,18 @@ bool          WaterFactory::tested = false;
 bool          WaterFactory::licensed = false;
 
 WaterFactory::WaterFactory()
+// ----------------------------------------------------------------------------
+//   Create water factory
+// ----------------------------------------------------------------------------
 {
     glewInit();
 }
 
 
 Water* WaterFactory::water(text name)
+// ----------------------------------------------------------------------------
+//   Return water instance according to its name
+// ----------------------------------------------------------------------------
 {
     Water* water = NULL;
     water_map::iterator found = waters.find(name);
@@ -82,7 +88,7 @@ bool WaterFactory::checkLicense()
 {
     if (!tested)
     {
-        licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.002");
+        licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.004");
         tested = true;
     }
     return true;
@@ -223,6 +229,19 @@ int module_init(const Tao::ModuleApi *api, const Tao::ModuleInfo *)
 {
     XL_INIT_TRACES();
     WaterFactory::instance()->tao = api;
+
+    // Check if we support floating textures to use correctly this module. If not, then
+    // do not create the water surface to avoid GL errors. Refs #2690.
+    if (!api->isGLExtensionAvailable("GL_ARB_texture_float"))
+    {
+        XL::Ooops("GL_ARB_texture_float extension not available");
+        return -1;
+    }
+    if (!api->isGLExtensionAvailable("GL_EXT_gpu_shader4"))
+    {
+        XL::Ooops("GL_EXT_gpu_shader4 extension not available");
+        return -1;
+    }
     return 0;
 }
 
