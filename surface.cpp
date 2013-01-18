@@ -152,16 +152,17 @@ void Surface::Draw(SurfaceMesh* surface)
     glVertexPointer(3, GL_DOUBLE, 0, &surface->vertices[0].x);
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    WaterFactory::instance()->tao->EnableTexCoords(&surface->textures[0].x);
-    WaterFactory::instance()->tao->SetTextures();
+    const ModuleApi *tao = WaterFactory::instance()->tao;
+    tao->EnableTexCoords(&surface->textures[0].x, ~0UL);
+    tao->SetTextures();
 
     GLuint size = stacks * slices * 4;
 
     // Set fill color defined in Tao
-    if(WaterFactory::instance()->tao->SetFillColor())
+    if(tao->SetFillColor())
         glDrawElements(GL_QUADS, size, GL_UNSIGNED_INT, &surface->indices[0]);
 
-    WaterFactory::instance()->tao->DisableTexCoords();
+    tao->DisableTexCoords(~0UL);
 
     glDisableClientState(GL_VERTEX_ARRAY);
 
