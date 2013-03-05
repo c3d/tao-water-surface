@@ -17,9 +17,11 @@ include(../modules.pri)
 INCLUDEPATH += $${TAOTOPSRC}/tao/include/tao/
 HEADERS = \
           water.h \
+          surface.h \
     water_factory.h
 
 SOURCES = water.cpp \
+          surface.cpp \
     water_factory.cpp
 
 win32 {
