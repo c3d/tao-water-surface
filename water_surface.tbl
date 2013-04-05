@@ -21,6 +21,7 @@
 // ****************************************************************************
 
 #include "water_factory.h"
+#include "surface.h"
 
 PREFIX(WaterShow,  tree, "water_show",
        PARM(n, text, "The name of the water"),
