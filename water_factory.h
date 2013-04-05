@@ -66,6 +66,9 @@ protected:
 
 protected:
     static WaterFactory * factory;
+
+    // License
+    static bool tested, licensed;
 };
 
 #endif
