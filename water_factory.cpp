@@ -25,6 +25,10 @@ const Tao::ModuleApi *WaterFactory::tao = NULL;
 
 WaterFactory* WaterFactory::factory = NULL;
 
+// License
+bool          WaterFactory::tested = false;
+bool          WaterFactory::licensed = false;
+
 WaterFactory::WaterFactory()
 // ----------------------------------------------------------------------------
 //   Create water factory
@@ -77,6 +81,20 @@ void WaterFactory::destroy()
 }
 
 
+bool WaterFactory::checkLicense()
+// ----------------------------------------------------------------------------
+//   Check module license
+// ----------------------------------------------------------------------------
+{
+    if (!tested)
+    {
+        licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.004");
+        tested = true;
+    }
+    return true;
+}
+
+
 void WaterFactory::render_callback(void *arg)
 // ----------------------------------------------------------------------------
 //   Find water by name and draw it
@@ -86,15 +104,6 @@ void WaterFactory::render_callback(void *arg)
     Water * water = WaterFactory::instance()->water(name);
     if (water)
         water->Draw();
-}
-
-
-void WaterFactory::identify_callback(void *arg)
-// ----------------------------------------------------------------------------
-//   Identify callback: don't do anything
-// ----------------------------------------------------------------------------
-{
-    (void) arg;
 }
 
 
@@ -114,8 +123,7 @@ Name_p WaterFactory::water_show(text name)
 {
     Water* water = instance()->water(name);
     water->update();
-    instance()->tao->AddToLayout2(WaterFactory::render_callback,
-                                 WaterFactory::identify_callback,
+    instance()->tao->addToLayout(WaterFactory::render_callback,
                                  strdup(name.c_str()),
                                  WaterFactory::delete_callback);
     return XL::xl_true;

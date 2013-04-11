@@ -49,7 +49,7 @@ colored_water_surface n:text, w:real, h:real ->
         texture_unit 0
         water_show n
         water_shader
-        plane 0, 0, w, h, WATER_DETAIL, WATER_DETAIL
+        surface 0, 0, w, h, WATER_DETAIL, WATER_DETAIL
 
 
 water_shader ->
