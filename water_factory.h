@@ -45,11 +45,9 @@ public:
     static bool          checkLicense();
 
     static void          render_callback(void *arg);
-    static void          identify_callback(void *arg);
     static void          delete_callback(void *arg);
 
     // XL interface
-    static Real_p        water_strength(text);
     static Name_p        water_show(text name);
     static Name_p        water_only(text name);
     static Name_p        water_remove(text name);
@@ -68,6 +66,9 @@ protected:
 
 protected:
     static WaterFactory * factory;
+
+    // License
+    static bool tested, licensed;
 };
 
 #endif

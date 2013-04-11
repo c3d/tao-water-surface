@@ -1,7 +1,8 @@
 ﻿/**
  * @~english
  * @taomoduledescription{WaterSurface, Water surface}
- * <tt>import WaterSurface</tt> - Defines a sort of dynamic water surface.@n
+ *
+ * <tt>import WaterSurface</tt> - Defines a sort of dynamic water surface.\n
  *
  * With this module, you can add nice and dynamic water surfaces in your presentations,
  * as shown by the following example :
@@ -12,7 +13,8 @@
  * @endtaomoduledescription{WaterSurface}
  * @~french
  * @taomoduledescription{WaterSurface, Surface d'eau}
- * <tt>import WaterSurface</tt> - Définit une sorte de surface d'eau dynamique.@n
+ *
+ * <tt>import WaterSurface</tt> - Définit une sorte de surface d'eau dynamique.\n
  *
  * Ce module permet d'intégrer des surfaces d'eau dynamiques à vos présentations,
  * comme le montre l'exemple suivant :
@@ -62,39 +64,42 @@ real WATER_STRENGTH = 1.0;
  * @~english
  * Creates a dynamic water surface.
  *
- * Defines a basic water surface of size (@p w, @p h) named @p name.@n
- * The texture bound to texture unit #1 defines the underwater environment.
- * Optionally, another texture showing the above water environment may be bound
- * to texture unit #2. This will slightly improve the quality of the rendering.
+ * Defines a basic water surface of size (@p w, @p h) named @p name.\n
+ * To obtain a realistic surface, a texture have to be binded previously
+ * on the texture unit 1 in order to define correctly the underwater environment.
  *
- * For instance, the following example creates a basic water surface named @c water:
+ * @note An other texture showing the abovewater environment can also be binded on the texture unit 2
+ * in order to improve slightly the rendering.
+ *
+ * For instance, the following example creates a basic water surface named @e water :
 @code
-// The underwater texture
+// Our underwater texture
 texture_unit 1
 texture "under.jpg"
-// The above water texture (optional)
+// Our abovewater texture (optionnal)
 texture_unit 2
 texture "above.jpg"
 // Create water surface
-water_surface "water", 500, 500
+water_surface 500, 500
 @endcode
  *
- * @note This function is equivalent to :
+ * @note This function is a shorcut to :
 @code
 color 0.25, 1.0, 1.0, 1.0
-colored_water_surface name, w, h
+colored_water_surface w, h
 @endcode
  *
  * @~french
  * Construit une surface d'eau dynamique.
  *
  * Définit une surface d'eau dynamique de taille (@p w, @p h) avec le nom @p name.\n
- * Pour obtenir une surface d'eau réaliste, une texture doit nécessairement être appliquée
+ * Pour obtenir une surface d'eau réaliste, une texture doit nécesserairement être appliquée
  * sur l'unité de texture 1 afin de décrire l'environnement situé au fond de l'eau.
- * Une autre texture décrivant l'environnement situé au dessus de l'eau peut également
- * être appliqué sur l'unité de texture 2 afin d'améliorer légérement le rendu.
  *
- * Par exemple, le code suivant créé une simple surface d'eau nommée @c eau :
+ * @note Une autre texture décrivant l'environnement situé au dessus de l'eau peut également être appliqué sur
+ * l'unité de texture 2 afin d'améliorer légérement le rendu obtenu.
+ *
+ * Par exemple, le code suivant créé une simple surface d'eau nommée @e eau:
 @code
 // La texture du fond
 texture_unit 1
@@ -103,13 +108,13 @@ texture "fond.jpg"
 texture_unit 2
 texture "dessus.jpg"
 // Création de la surface d'eau
-water_surface "eau", 500, 500
+water_surface 500, 500
 @endcode
  *
  * @note Cette fonction est un raccourci à :
 @code
 color 0.25, 1.0, 1.0, 1.0
-colored_water_surface name, w, h
+colored_water_surface w, h
 @endcode
  */
 water_surface (name:text, w:real, h:real);
@@ -119,13 +124,15 @@ water_surface (name:text, w:real, h:real);
  * @~english
  * Creates a colored water surface.
  *
- * Defines a dynamic water surface of size (@p w, @p h) named @p name.@n
- * The texture bound to texture unit #1 defines the underwater environment.
- * The color of this water surface may be adjusted by using the color primitives.
- * Optionally, another texture showing the above water environment may be bound
- * to texture unit #2. This will slightly improve the quality of the rendering.
+ * Defines a dynamic water surface of size (@p w, @p h) named @p name.\n
+ * To obtain a realistic surface, a texture have to
+ * be binded previously on the texture unit 1 in order to define correctly the underwater environment.\n
+ * The color of this water surface is defined by all color primitives.
  *
- * For instance, the following example creates a colorless water surface named @c water:
+ * @note An other texture showing the abovewater environment can also be binded on the texture unit 2
+ * in order to improve slightly the rendering.
+ *
+ * For instance, the following example create a white water surface named @e water:
 @code
 // Water color
 color "white"
@@ -142,14 +149,15 @@ colored_water_surface "water", 500, 500
  * @~french
  * Construit une surface d'eau colorée.
  *
- * Définit une surface d'eau dynamique de taille (@p w, @p h) avec le nom @p name.@n
+ * Définit une surface d'eau dynamique de taille (@p w, @p h) avec le nom @p name.\n
  * Pour obtenir une surface d'eau réaliste, une texture doit nécesserairement être
- * appliquée sur l'unité de texture 1 afin de décrire l'environnement situé au fond de l'eau.@n
- * La couleur de cette surface d'eau peut être modifiée par les primitives de couleur.
- * Une autre texture décrivant l'environnement situé au dessus de l'eau peut également
- * être appliquée sur l'unité de texture 2 afin d'améliorer légérement le rendu obtenu.
+ * appliquée sur l'unité de texture 1 afin de décrire l'environnement situé au fond de l'eau.\n
+ * La couleur de cette surface d'eau est en revanche définit par les primitives de couleur.
  *
- * Par exemple, le code suivant créé une surface d'eau incolore nommée @c eau :
+ * @note Une autre texture décrivant l'environnement situé au dessus de l'eau peut également être appliqué sur
+ * l'unité de texture 2 afin d'améliorer légérement le rendu obtenu.
+ *
+ * Par exemple, le code suivant créé une surface d'eau blanche nommée @e eau :
 @code
 // Couleur de l'eau
 color "white"
