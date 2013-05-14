@@ -314,6 +314,9 @@ void Water::checkGLContext()
 
         pcontext = QGLContext::currentContext();
 
+        // Synchronise state
+        GL.Sync();
+
         createShaders();     // Create all shaders
         createTexture(ping); // Create ping texture
         createTexture(pong); // Create pong texture
