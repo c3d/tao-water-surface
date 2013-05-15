@@ -107,6 +107,15 @@ void WaterFactory::render_callback(void *arg)
 }
 
 
+void WaterFactory::identify_callback(void *arg)
+// ----------------------------------------------------------------------------
+//   Identify callback: don't do anything
+// ----------------------------------------------------------------------------
+{
+    (void) arg;
+}
+
+
 void WaterFactory::delete_callback(void *arg)
 // ----------------------------------------------------------------------------
 //   Delete water name
@@ -123,7 +132,8 @@ Name_p WaterFactory::water_show(text name)
 {
     Water* water = instance()->water(name);
     water->update();
-    instance()->tao->addToLayout(WaterFactory::render_callback,
+    instance()->tao->AddToLayout2(WaterFactory::render_callback,
+                                 WaterFactory::identify_callback,
                                  strdup(name.c_str()),
                                  WaterFactory::delete_callback);
     return XL::xl_true;
