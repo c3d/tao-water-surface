@@ -81,6 +81,11 @@ void Water::Draw()
     default:
         Q_ASSERT(!"Invalid value");
     }
+
+    // We don't want to use Tao filter settings (notably mipmap settings)
+    // So we force textures to GL_LINEAR.
+    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 
