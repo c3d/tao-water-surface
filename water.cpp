@@ -132,7 +132,7 @@ void Water::drop(double x, double y, double radius, double strength)
     glUseProgram(dropShader->programId());
 
     // Set uniforms
-    GLfloat center[2] = {(float) x, (float) y};
+    GLfloat center[2] = {x, y};
     glUniform2fv(uniforms["dropCenter"], 1, center);
     glUniform1f(uniforms["dropRadius"], radius);
     glUniform1f(uniforms["dropStrength"], strength);
@@ -238,7 +238,7 @@ void Water::update()
     glUseProgram(updateShader->programId());
 
     // Set uniforms
-    GLfloat delta[2] = { 1.0f / width, 1.0f / height};
+    GLfloat delta[2] = {1.0 / width, 1.0 / height};
     glUniform2fv(uniforms["updateDelta"], 1, delta);
     glUniform1f(uniforms["updateRatio"], ratio);
 
