@@ -28,6 +28,7 @@
 #include "base.h"
 #include "tao/module_api.h"
 #include "water.h"
+#include "surface.h"
 
 using namespace XL;
 
