@@ -41,7 +41,7 @@ struct Surface
 {
     // Constructor and destructor
     Surface(float x, float y, float w, float h, int lines, int columns);
-    ~Surface();
+    virtual ~Surface();
 
     // Draw Surface
     virtual void Draw();
