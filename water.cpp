@@ -63,9 +63,6 @@ void Water::Draw()
 //   Draw : Do nothing
 // ----------------------------------------------------------------------------
 {
-    // Check module license
-    if(! WaterFactory::checkLicense())
-        return;
 }
 
 
