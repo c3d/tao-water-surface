@@ -25,11 +25,9 @@
 
 // Detail of the surface
 WATER_DETAIL -> 150
-WATER_DETAIL := 150
 
 // Strength of the water displacement
-WATER_STRENGTH -> 1.0
-WATER_STRENGTH := 1.0
+WATER_STRENGTH -> 2.0
 
 water_surface n:text, w:real, h:real ->
     /**
