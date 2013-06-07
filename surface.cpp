@@ -109,10 +109,6 @@ void Surface::Draw()
 //   Draw subdivided surface
 // ----------------------------------------------------------------------------
 {
-    // Check module license
-    if(! WaterFactory::checkLicense())
-        return;
-
     SurfaceMesh * surface = NULL;
     Key key(slices, stacks);
     SurfaceCache::iterator found = cache.find(key);
