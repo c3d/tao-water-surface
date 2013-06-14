@@ -67,10 +67,6 @@ void Water::Draw()
 //   Draw : Do nothing
 // ----------------------------------------------------------------------------
 {
-    // Check module license
-    if(! WaterFactory::checkLicense())
-        return;
-
     // Use GL state to transfer textures in Tao
     GL.Enable(GL_TEXTURE_2D);
     switch(pass)

@@ -40,9 +40,6 @@ QT          += core \
 # Icon from http://www.iconarchive.com/show/simple-green-icons-by-simplefly/water-sea-icon.html
 INSTALLS    += thismod_icon
 
-LICENSE_FILES = water_surface.taokey.notsigned
-include(../licenses.pri)
-
 CRYPT_XL_SOURCES = water_surface2.xl
 include(../crypt_xl.pri)
 

@@ -25,10 +25,6 @@ const Tao::ModuleApi *WaterFactory::tao = NULL;
 
 WaterFactory* WaterFactory::factory = NULL;
 
-// License
-bool          WaterFactory::tested = false;
-bool          WaterFactory::licensed = false;
-
 WaterFactory::WaterFactory()
 // ----------------------------------------------------------------------------
 //   Create water factory
@@ -78,20 +74,6 @@ void WaterFactory::destroy()
         return;
     delete factory;
     factory = NULL;
-}
-
-
-bool WaterFactory::checkLicense()
-// ----------------------------------------------------------------------------
-//   Check module license
-// ----------------------------------------------------------------------------
-{
-    if (!tested)
-    {
-        licensed = instance()->tao->checkImpressOrLicense("WaterSurface 1.004");
-        tested = true;
-    }
-    return true;
 }
 
 
