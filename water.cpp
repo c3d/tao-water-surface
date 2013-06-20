@@ -20,10 +20,6 @@
 // ****************************************************************************
 #include "water.h"
 #include "water_factory.h"
-#include "tao/graphic_state.h"
-
-DLL_PUBLIC Tao::GraphicState * graphic_state = NULL;
-#define GL (*graphic_state)
 
 #define tao WaterFactory::instance()->tao
 
@@ -67,21 +63,6 @@ void Water::Draw()
 //   Draw : Do nothing
 // ----------------------------------------------------------------------------
 {
-    // Use GL state to transfer textures in Tao
-    GL.Enable(GL_TEXTURE_2D);
-    switch(pass)
-    {
-    case 0: break;
-    case 1: GL.BindTexture(GL_TEXTURE_2D, pong); break;
-    case 2: GL.BindTexture(GL_TEXTURE_2D, ping); break;
-    default:
-        Q_ASSERT(!"Invalid value");
-    }
-
-    // We don't want to use Tao filter settings (notably mipmap settings)
-    // So we force textures to GL_LINEAR.
-    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 
@@ -111,11 +92,8 @@ void Water::drop(double x, double y, double radius, double strength)
 
     checkGLContext();
 
-    // Assure we have a correct state before make changes
-    GL.Sync();
-
     // Save current settings
-    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_TEXTURE_BIT | GL_VIEWPORT_BIT);
+    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_VIEWPORT_BIT);
 
     // Prepare to draw into buffer
     glBindFramebuffer(GL_FRAMEBUFFER, frame);
@@ -220,11 +198,8 @@ void Water::update()
 
     checkGLContext();
 
-    // Assure we have a correct state before make changes
-    GL.Sync();
-
     // Save current settings
-    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_TEXTURE_BIT | GL_VIEWPORT_BIT);
+    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_VIEWPORT_BIT);
 
     // Prepare to draw into buffer
     glBindFramebuffer(GL_FRAMEBUFFER, frame);
@@ -287,9 +262,11 @@ void Water::update()
     {
     case 0:
     case 1:
+        tao->BindTexture2D(ping, width, height);
         pass = 2;
         break;
     case 2:
+        tao->BindTexture2D(pong, width, height);
         pass = 1;
         break;
     default:
@@ -298,7 +275,6 @@ void Water::update()
 
     // Restore settings
     glPopAttrib();
-
 }
 
 
@@ -314,9 +290,6 @@ void Water::checkGLContext()
                 debug() << "Context has changed" << "\n";
 
         pcontext = QGLContext::currentContext();
-
-        // Synchronise state
-        GL.Sync();
 
         createShaders();     // Create all shaders
         createTexture(ping); // Create ping texture

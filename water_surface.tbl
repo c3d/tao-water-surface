@@ -21,6 +21,7 @@
 // ****************************************************************************
 
 #include "water_factory.h"
+#include "surface.h"
 
 PREFIX(WaterShow,  tree, "water_show",
        PARM(n, text, "The name of the water"),
@@ -64,4 +65,15 @@ PREFIX(AddRandomDrops,  tree, "add_random_drops",
        GROUP(module.WaterSurface)
        SYNOPSIS("Add some random drops to a water")
        DESCRIPTION("Add some random drops to a water"))
+PREFIX(Surface,  tree, "surface",
+       PARM(x, real, )
+       PARM(y, real, )
+       PARM(w, real, )
+       PARM(h, real, )
+       PARM(l, integer, )
+       PARM(c, integer, ),
+       return Surface::surface(x, y, w, h, l, c),
+       GROUP(module.WaterSurface)
+       SYNOPSIS("Generate a subdivided surface")
+       DESCRIPTION("Generate a subdivided surface."))
 
