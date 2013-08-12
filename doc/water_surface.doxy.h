@@ -1,8 +1,7 @@
 ﻿/**
  * @~english
  * @taomoduledescription{WaterSurface, Water surface}
- *
- * <tt>import WaterSurface</tt> - Defines a sort of dynamic water surface.\n
+ * <tt>import WaterSurface</tt> - Defines a sort of dynamic water surface.@n
  *
  * With this module, you can add nice and dynamic water surfaces in your presentations,
  * as shown by the following example :
@@ -13,8 +12,7 @@
  * @endtaomoduledescription{WaterSurface}
  * @~french
  * @taomoduledescription{WaterSurface, Surface d'eau}
- *
- * <tt>import WaterSurface</tt> - Définit une sorte de surface d'eau dynamique.\n
+ * <tt>import WaterSurface</tt> - Définit une sorte de surface d'eau dynamique.@n
  *
  * Ce module permet d'intégrer des surfaces d'eau dynamiques à vos présentations,
  * comme le montre l'exemple suivant :
