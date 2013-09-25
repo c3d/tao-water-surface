@@ -61,11 +61,10 @@ public:
     uint     ping, pong;
     int      width, height;
 
-    // Water settings
-    float    ratio;
-    float    strength;
-
 private:
+   // Water settings
+   float    ratio;
+
    // FBO settings
    uint frame;
 

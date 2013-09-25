@@ -44,19 +44,12 @@ Water::Water(int w, int h)
 //   Construction
 // ----------------------------------------------------------------------------
     : pcontext(NULL), ping(0), pong(0),
-      width(w), height(h), ratio(0.95), strength(1.0), frame(0), pass(0)
+      width(w), height(h), ratio(0.95), frame(0), pass(0)
 {
     checkGLContext();
 
     IFTRACE(water_surface)
             debug() << "Creation successfull" << "\n";
-
-    // Check that we can use texture lookups in vertex shaders.
-    // If not, then disabling the use of water strength. Refs #3305.
-    int MaxVertexTextureImageUnits;
-    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MaxVertexTextureImageUnits);
-    if(MaxVertexTextureImageUnits == 0)
-        strength = 0.0;
 }
 
 
