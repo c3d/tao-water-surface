@@ -107,16 +107,6 @@ void WaterFactory::delete_callback(void *arg)
 }
 
 
-Real_p WaterFactory::water_strength(text name)
-// ----------------------------------------------------------------------------
-//   Strength of water
-// ----------------------------------------------------------------------------
-{
-    Water* water = instance()->water(name);
-    return new Real(water->strength);
-}
-
-
 Name_p WaterFactory::water_show(text name)
 // ----------------------------------------------------------------------------
 //   Show water
@@ -237,6 +227,11 @@ int module_init(const Tao::ModuleApi *api, const Tao::ModuleInfo *)
     if (!api->isGLExtensionAvailable("GL_ARB_texture_float"))
     {
         XL::Ooops("GL_ARB_texture_float extension not available");
+        return -1;
+    }
+    if (!api->isGLExtensionAvailable("GL_EXT_gpu_shader4"))
+    {
+        XL::Ooops("GL_EXT_gpu_shader4 extension not available");
         return -1;
     }
     return 0;

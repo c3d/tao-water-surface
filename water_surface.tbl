@@ -22,12 +22,6 @@
 
 #include "water_factory.h"
 
-PREFIX(WaterStrength,  tree, "water_strength",
-       PARM(n, text, "The name of the water"),
-       return WaterFactory::water_strength(n),
-       GROUP(module.WaterSurface)
-       SYNOPSIS("Return stength of a water")
-       DESCRIPTION("Show a water"))
 PREFIX(WaterShow,  tree, "water_show",
        PARM(n, text, "The name of the water"),
        return WaterFactory::water_show(n),
