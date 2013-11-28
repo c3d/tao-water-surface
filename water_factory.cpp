@@ -229,11 +229,6 @@ int module_init(const Tao::ModuleApi *api, const Tao::ModuleInfo *)
         XL::Ooops("GL_ARB_texture_float extension not available");
         return -1;
     }
-    if (!api->isGLExtensionAvailable("GL_EXT_gpu_shader4"))
-    {
-        XL::Ooops("GL_EXT_gpu_shader4 extension not available");
-        return -1;
-    }
     return 0;
 }
 
