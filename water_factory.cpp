@@ -107,6 +107,16 @@ void WaterFactory::delete_callback(void *arg)
 }
 
 
+Real_p WaterFactory::water_strength(text name)
+// ----------------------------------------------------------------------------
+//   Strength of water
+// ----------------------------------------------------------------------------
+{
+    Water* water = instance()->water(name);
+    return new Real(water->strength);
+}
+
+
 Name_p WaterFactory::water_show(text name)
 // ----------------------------------------------------------------------------
 //   Show water
