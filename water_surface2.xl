@@ -47,47 +47,76 @@ colored_water_surface n:text, w:real, h:real ->
         texture_unit 0
         water_show n
         water_shader
-        surface 0, 0, w, h, WATER_DETAIL, WATER_DETAIL
+        plane 0, 0, w, h, WATER_DETAIL, WATER_DETAIL
 
 
 water_shader ->
     /**
-    *   Define the water shader
+    *   Define the water shader with displacement
     **/
     shader_program
         shader_log
-        vertex_shader <<
-            varying vec3 viewDir;
-            varying vec4 waterColor;
-            varying mat4 textureMat;
+        if((water_strength "") > 0.0) then
+            vertex_shader <<
+                varying vec3 viewDir;
+                varying vec4 waterColor;
+                varying mat4 textureMat;
 
-            uniform sampler2D water;
-            uniform float     strength;
+                uniform sampler2D water;
+                uniform float     strength;
 
-            void main()
-            {
-               // Texture info
-               vec4 info = texture2D(water, gl_Vertex.xy * 0.5 + 0.5);
+                void main()
+                {
+                   // Texture info
+                   vec4 info = texture2D(water, gl_Vertex.xy * 0.5 + 0.5);
 
-               // Compute new position according to displacement map
-               vec3 position    = gl_Vertex.xyz;
-               position.z += info.r * 1000.0 * strength;
-               gl_Position = gl_ModelViewProjectionMatrix * vec4(position, 1.0);
+                   // Compute new position according to displacement map
+                   vec3 position    = gl_Vertex.xyz;
+                   position.z += info.r * 1000.0 * strength;
+                   gl_Position = gl_ModelViewProjectionMatrix * vec4(position, 1.0);
 
-               // Compute texture coordinates
-               gl_TexCoord[1]    = gl_MultiTexCoord1;
-               gl_TexCoord[1].z  = info.r;
+                   // Compute texture coordinates
+                   gl_TexCoord[1]    = gl_MultiTexCoord1;
+                   gl_TexCoord[1].z  = info.r;
 
-               // Get texture matrix
-               textureMat = gl_TextureMatrix[1];
+                   // Get texture matrix
+                   textureMat = gl_TextureMatrix[1];
 
-               // World position
-               viewDir = vec3(position.xyz);
+                   // World position
+                   viewDir = vec3(position.xyz);
 
-               // Water color
-               waterColor = gl_Color;
-            }
-        >>
+                   // Water color
+                   waterColor = gl_Color;
+                }
+            >>
+        else
+            vertex_shader <<
+                varying vec3 viewDir;
+                varying vec4 waterColor;
+                varying mat4 textureMat;
+
+                uniform float strength;
+
+                void main()
+                {
+                   // Compute new position according to displacement map
+                   vec3 position    = gl_Vertex.xyz;
+                   position.z += strength;
+                   gl_Position = gl_ModelViewProjectionMatrix * vec4(position, 1.0);
+
+                   // Compute texture coordinates
+                   gl_TexCoord[1] = gl_MultiTexCoord1;
+
+                   // Get texture matrix
+                   textureMat = gl_TextureMatrix[1];
+
+                   // World position
+                   viewDir = vec3(position.xyz);
+
+                   // Water color
+                   waterColor = gl_Color;
+                }
+            >>
         fragment_shader <<
             varying vec3 viewDir;
             varying vec4 waterColor;

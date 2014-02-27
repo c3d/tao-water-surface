@@ -1,6 +1,6 @@
 @INCLUDE = ../../Doxyfile
 PROJECT_NAME = \"Water Surface\"
-PROJECT_NUMBER = 1.005
+PROJECT_NUMBER = 1.007
 PROJECT_LOGO = ../icon.png
-QHP_NAMESPACE = com.taodyne.TaoPresentations.modules.WaterSurface.1.005
+QHP_NAMESPACE = com.taodyne.TaoPresentations.modules.WaterSurface.1.007
 QHP_VIRTUAL_FOLDER = WaterSurface
