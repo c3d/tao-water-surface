@@ -232,11 +232,11 @@ int module_init(const Tao::ModuleApi *api, const Tao::ModuleInfo *)
     XL_INIT_TRACES();
     WaterFactory::instance()->tao = api;
 
-    // Check if we support floating textures to use correctly this module. If not, then
-    // do not create the water surface to avoid GL errors. Refs #2690.
+    // Check if we support floating textures to use correctly this module.
+    // If not, do not create the water surface to avoid GL errors. Refs #2690.
     if (!api->isGLExtensionAvailable("GL_ARB_texture_float"))
     {
-        XL::Ooops("GL_ARB_texture_float extension not available");
+        XL::Ooops("Water: GL_ARB_texture_float extension not available");
         return -1;
     }
     return 0;
