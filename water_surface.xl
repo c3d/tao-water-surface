@@ -11,7 +11,7 @@ module_description
     description "Allows to create a dynamic water surface."
     author "Taodyne SAS"
     website "http://www.taodyne.com"
-    version 1.007
+    version 1.008
 
 module_description "fr",
     name "Surface d'eau"
