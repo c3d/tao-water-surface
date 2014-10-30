@@ -30,7 +30,6 @@ win32 {
 TBL_SOURCES  = water_surface.tbl
 
 OTHER_FILES = traces.tbl \
-    water_surface2.xl \
     water_surface.xl \
     water_surface.tbl
 QT          += core \
@@ -39,9 +38,6 @@ QT          += core \
 
 # Icon from http://www.iconarchive.com/show/simple-green-icons-by-simplefly/water-sea-icon.html
 INSTALLS    += thismod_icon
-
-CRYPT_XL_SOURCES = water_surface2.xl
-include(../crypt_xl.pri)
 
 QMAKE_SUBSTITUTES = doc/Doxyfile.in
 DOXYFILE = doc/Doxyfile
