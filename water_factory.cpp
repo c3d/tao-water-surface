@@ -30,7 +30,6 @@ WaterFactory::WaterFactory()
 //   Create water factory
 // ----------------------------------------------------------------------------
 {
-    glewInit();
 }
 
 

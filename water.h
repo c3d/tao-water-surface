@@ -23,6 +23,8 @@
 #include "tao/module_api.h"
 #include "tao/tao_gl.h"
 #include "basics.h" // XLR
+#include <QGLContext>
+#include <QGLShaderProgram>
 
 using namespace std;
 using namespace Tao;

@@ -101,11 +101,8 @@ int module_init(const Tao::ModuleApi *api, const Tao::ModuleInfo *)
 //   Initialize the Tao module
 // ----------------------------------------------------------------------------
 {
-    glewInit();
     XL_INIT_TRACES();
-
     Basis::tao = api;
-
     return 0;
 }
 

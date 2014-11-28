@@ -23,9 +23,9 @@
 #include "tao/graphic_state.h"
 
 DLL_PUBLIC Tao::GraphicState * graphic_state = NULL;
-#define GL (*graphic_state)
-
 #define tao WaterFactory::instance()->tao
+
+
 
 // ============================================================================
 //
@@ -54,7 +54,7 @@ Water::Water(int w, int h)
     // Check that we can use texture lookups in vertex shaders.
     // If not, then disabling the use of water strength. Refs #3305.
     int MaxVertexTextureImageUnits;
-    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MaxVertexTextureImageUnits);
+    GL.Get(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MaxVertexTextureImageUnits);
     if(MaxVertexTextureImageUnits == 0)
         strength = 0.0;
 }
@@ -122,64 +122,65 @@ void Water::drop(double x, double y, double radius, double strength)
     GL.Sync();
 
     // Save current settings
-    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_TEXTURE_BIT | GL_VIEWPORT_BIT);
+    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
+                 GL_TEXTURE_BIT | GL_VIEWPORT_BIT);
 
     // Prepare to draw into buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, frame);
+    GL.BindFramebuffer(GL_FRAMEBUFFER, frame);
 
     // Switch to correct buffer and bind
     // the other as a texture
     switch(pass)
     {
     case 0:
-        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        GL.DrawBuffer(GL_COLOR_ATTACHMENT0);
         break;
     case 1:
-        glDrawBuffer(GL_COLOR_ATTACHMENT0);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, pong);
+        GL.DrawBuffer(GL_COLOR_ATTACHMENT0);
+        GL.Enable(GL_TEXTURE_2D);
+        GL.BindTexture(GL_TEXTURE_2D, pong);
         break;
     case 2:
-        glDrawBuffer(GL_COLOR_ATTACHMENT1);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, ping);
+        GL.DrawBuffer(GL_COLOR_ATTACHMENT1);
+        GL.Enable(GL_TEXTURE_2D);
+        GL.BindTexture(GL_TEXTURE_2D, ping);
         break;
     default:
         Q_ASSERT(!"Invalid value");
     }
 
     // Clear color
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GL.ClearColor(0.0, 0.0, 0.0, 1.0);
+    GL.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glViewport(0, 0, width, height);
+    GL.Viewport(0, 0, width, height);
 
     // Bind drop shader
-    glUseProgram(dropShader->programId());
+    GL.UseProgram(dropShader->programId());
 
     // Set uniforms
     GLfloat center[2] = {(float) x, (float) y};
-    glUniform2fv(uniforms["dropCenter"], 1, center);
-    glUniform1f(uniforms["dropRadius"], radius);
-    glUniform1f(uniforms["dropStrength"], strength);
+    GL.Uniform2fv(uniforms["dropCenter"], 1, center);
+    GL.Uniform(uniforms["dropRadius"], (float) radius);
+    GL.Uniform(uniforms["dropStrength"], (float) strength);
 
-    glBegin(GL_QUADS);
-    glTexCoord2i( 0 , 0);
-    glVertex2i  (-width/2, -height/2);
-    glTexCoord2i( 1 , 0);
-    glVertex2i  ( width/2, -height/2);
-    glTexCoord2i( 1,  1);
-    glVertex2i  ( width/2,  height/2);
-    glTexCoord2i( 0,  1);
-    glVertex2i  (-width/2,  height/2);
-    glEnd();
+    GL.Begin(GL_QUADS);
+    GL.TexCoord( 0 , 0);
+    GL.Vertex  (-width/2, -height/2);
+    GL.TexCoord( 1 , 0);
+    GL.Vertex  ( width/2, -height/2);
+    GL.TexCoord( 1,  1);
+    GL.Vertex  ( width/2,  height/2);
+    GL.TexCoord( 0,  1);
+    GL.Vertex  (-width/2,  height/2);
+    GL.End();
 
-    glUseProgram(0);
+    GL.UseProgram(0);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
+    GL.BindTexture(GL_TEXTURE_2D, 0);
+    GL.Disable(GL_TEXTURE_2D);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL.BindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Ping pong technique
     switch(pass)
@@ -234,60 +235,60 @@ void Water::update()
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_TEXTURE_BIT | GL_VIEWPORT_BIT);
 
     // Prepare to draw into buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, frame);
+    GL.BindFramebuffer(GL_FRAMEBUFFER, frame);
 
     // Switch to correct buffer and bind
     // the other as a texture
     switch(pass)
     {
     case 0:
-        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        GL.DrawBuffer(GL_COLOR_ATTACHMENT0);
         break;
     case 1:
-        glDrawBuffer(GL_COLOR_ATTACHMENT0);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, pong);
+        GL.DrawBuffer(GL_COLOR_ATTACHMENT0);
+        GL.Enable(GL_TEXTURE_2D);
+        GL.BindTexture(GL_TEXTURE_2D, pong);
         break;
     case 2:
-        glDrawBuffer(GL_COLOR_ATTACHMENT1);
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, ping);
+        GL.DrawBuffer(GL_COLOR_ATTACHMENT1);
+        GL.Enable(GL_TEXTURE_2D);
+        GL.BindTexture(GL_TEXTURE_2D, ping);
         break;
     default:
         Q_ASSERT(!"Invalid value");
     }
 
     // Clear color
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GL.ClearColor(0.0, 0.0, 0.0, 1.0);
+    GL.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glViewport(0, 0, width, height);
+    GL.Viewport(0, 0, width, height);
 
     // Bind update shader
-    glUseProgram(updateShader->programId());
+    GL.UseProgram(updateShader->programId());
 
     // Set uniforms
     GLfloat delta[2] = { 1.0f / width, 1.0f / height};
-    glUniform2fv(uniforms["updateDelta"], 1, delta);
-    glUniform1f(uniforms["updateRatio"], ratio);
+    GL.Uniform2fv(uniforms["updateDelta"], 1, delta);
+    GL.Uniform(uniforms["updateRatio"], ratio);
 
-    glBegin(GL_QUADS);
-    glTexCoord2i( 0 , 0);
-    glVertex2i  (-width/2, -height/2);
-    glTexCoord2i( 1 , 0);
-    glVertex2i  ( width/2, -height/2);
-    glTexCoord2i( 1,  1);
-    glVertex2i  ( width/2,  height/2);
-    glTexCoord2i( 0,  1);
-    glVertex2i  (-width/2,  height/2);
-    glEnd();
+    GL.Begin(GL_QUADS);
+    GL.TexCoord( 0 , 0);
+    GL.Vertex  (-width/2, -height/2);
+    GL.TexCoord( 1 , 0);
+    GL.Vertex  ( width/2, -height/2);
+    GL.TexCoord( 1,  1);
+    GL.Vertex  ( width/2,  height/2);
+    GL.TexCoord( 0,  1);
+    GL.Vertex  (-width/2,  height/2);
+    GL.End();
 
-    glUseProgram(0);
+    GL.UseProgram(0);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
+    GL.BindTexture(GL_TEXTURE_2D, 0);
+    GL.Disable(GL_TEXTURE_2D);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL.BindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Ping pong technique
     switch(pass)
@@ -346,16 +347,16 @@ void Water::createTexture(uint& texId)
         return;
 
     // Create texture for ping pong technic
-    glGenTextures(1, &texId);
-    glBindTexture(GL_TEXTURE_2D, texId);
+    GL.GenTextures(1, &texId);
+    GL.BindTexture(GL_TEXTURE_2D, texId);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    GL.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F_ARB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GL.TexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GL.BindTexture(GL_TEXTURE_2D, 0);
 
     tao->showGlErrors();
 
@@ -370,12 +371,12 @@ void Water::createBuffer()
 // ----------------------------------------------------------------------------
 {
     if(frame)
-        glDeleteFramebuffers(1, &frame);
+        GL.DeleteFramebuffers(1, &frame);
 
     // Check if graphic card has really two color attachments
     // because we need it to make ping-pong technics
     GLint max_color_attachments = 0;
-    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+    GL.Get(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
     if(max_color_attachments < 2)
     {
         failed = true;
@@ -388,12 +389,14 @@ void Water::createBuffer()
         return;
 
     // Create fbo and attach textures to it
-    glGenFramebuffers(1, &frame); // Generate one frame buffer and store the ID in frame
-    glBindFramebuffer(GL_FRAMEBUFFER, frame); // Bind our frame buffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ping, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, pong, 0);
+    GL.GenFramebuffers(1, &frame); // Generate one frame buffer and store the ID in frame
+    GL.BindFramebuffer(GL_FRAMEBUFFER, frame); // Bind our frame buffer
+    GL.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_TEXTURE_2D, ping, 0);
+    GL.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+                            GL_TEXTURE_2D, pong, 0);
     checkFramebufferStatus();
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL.BindFramebuffer(GL_FRAMEBUFFER, 0);
 
     tao->showGlErrors();
 
@@ -515,9 +518,9 @@ void Water::createDropShader()
 
             // Save uniform locations
             uint id = dropShader->programId();
-            uniforms["dropCenter"]    = glGetUniformLocation(id, "center");
-            uniforms["dropRadius"]    = glGetUniformLocation(id, "radius");
-            uniforms["dropStrength"]  = glGetUniformLocation(id, "strength");
+            uniforms["dropCenter"]    = GL.GetUniformLocation(id, "center");
+            uniforms["dropRadius"]    = GL.GetUniformLocation(id, "radius");
+            uniforms["dropStrength"]  = GL.GetUniformLocation(id, "strength");
         }
     }
 }
@@ -638,8 +641,8 @@ void Water::createUpdateShader()
 
             // Save uniform locations
             uint id = updateShader->programId();
-            uniforms["updateDelta"] = glGetUniformLocation(id, "delta");
-            uniforms["updateRatio"] = glGetUniformLocation(id, "ratio");
+            uniforms["updateDelta"] = GL.GetUniformLocation(id, "delta");
+            uniforms["updateRatio"] = GL.GetUniformLocation(id, "ratio");
         }
     }
 }
@@ -651,7 +654,7 @@ void Water::checkFramebufferStatus()
 // ----------------------------------------------------------------------------
 {
     GLenum status;
-    status=(GLenum)glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    status= (GLenum) GL.CheckFramebufferStatus(GL_FRAMEBUFFER);
 
     text error = "";
     switch(status) {
