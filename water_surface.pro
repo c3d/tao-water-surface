@@ -22,11 +22,6 @@ HEADERS = \
 SOURCES = water.cpp \
     water_factory.cpp
 
-win32 {
-  DEFINES     += GLEW_STATIC
-  SOURCES     += $${TAOTOPSRC}/tao/include/tao/GL/glew.c
-}
-
 TBL_SOURCES  = water_surface.tbl
 
 OTHER_FILES = traces.tbl \
