@@ -82,7 +82,7 @@ void Water::Draw()
     case 1: GL.BindTexture(GL_TEXTURE_2D, pong); break;
     case 2: GL.BindTexture(GL_TEXTURE_2D, ping); break;
     default:
-        Q_ASSERT(!"Invalid value");
+        XL_ASSERT(!"Invalid value");
     }
 
     // We don't want to use Tao filter settings (notably mipmap settings)
@@ -146,7 +146,7 @@ void Water::drop(double x, double y, double radius, double strength)
         GL.BindTexture(GL_TEXTURE_2D, ping);
         break;
     default:
-        Q_ASSERT(!"Invalid value");
+        XL_ASSERT(!"Invalid value");
     }
 
     // Clear color
@@ -193,7 +193,7 @@ void Water::drop(double x, double y, double radius, double strength)
         pass = 1;
         break;
     default:
-        Q_ASSERT(!"Invalid value");
+        XL_ASSERT(!"Invalid value");
     }
 
     // Restore settings
@@ -255,7 +255,7 @@ void Water::update()
         GL.BindTexture(GL_TEXTURE_2D, ping);
         break;
     default:
-        Q_ASSERT(!"Invalid value");
+        XL_ASSERT(!"Invalid value");
     }
 
     // Clear color
@@ -301,7 +301,7 @@ void Water::update()
         pass = 1;
         break;
     default:
-        Q_ASSERT(!"Invalid value");
+        XL_ASSERT(!"Invalid value");
     }
 
     // Restore settings
